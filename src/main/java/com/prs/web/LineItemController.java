@@ -8,16 +8,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.prs.business.LineItem;
-import com.prs.db.LineItemRepo;
+import com.prs.business.*;
+import com.prs.db.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/lineItems")
+@RequestMapping("/api/lineItems")
 public class LineItemController 
 {
 	@Autowired
 	private LineItemRepo lineItemRepo;
+	
+	@Autowired
+	private RequestRepo requestRepo;
 	
 	// List all LineItems
 	@GetMapping("/")
@@ -38,10 +41,22 @@ public class LineItemController
 	}
 	// Add a LineItem
 	@PostMapping("/")
-	public LineItem addLineItem(@RequestBody LineItem p)
+	public LineItem addLineItem(@RequestBody LineItem li)
 	{
-		if(p != null)
-			return lineItemRepo.save(p);
+		
+		
+		if(li != null)
+		{
+			Request r = li.getRequest();
+			Product p = li.getProduct();
+			double price = Double.parseDouble(p.getPrice());
+			price *= li.getQuantity();
+			r.setTotal(r.getTotal() + price);
+			
+			requestRepo.save(r);
+			
+			return lineItemRepo.save(li);
+		}
 		else
 		{
 			System.out.println("No lineItem given");
@@ -50,27 +65,50 @@ public class LineItemController
 	}
 	
 	// Edit a LineItem
-	@PutMapping("/")
-	public LineItem updateLineItem(@RequestBody LineItem p)
+	@PutMapping("/{id}")
+	public LineItem updateLineItem(@RequestBody LineItem li, @PathVariable int id)
 	{
-		if(p != null)
-			return lineItemRepo.save(p);
-		else
+		
+		if(id == li.getId())
 		{
-			System.out.println("No lineItem given");
-			return null;
+			Product p = li.getProduct();
+			double price = Double.parseDouble(p.getPrice()) * li.getQuantity();
+			LineItem li2 = lineItemRepo.findById(id).get();
+			Product p2 = li2.getProduct();
+			double price2 = Double.parseDouble(p2.getPrice()) * li2.getQuantity();
+			price2 -= price;
+			Request r = li.getRequest();
+			r.setTotal(r.getTotal() + price2);
+			requestRepo.save(r);
+			
+			return lineItemRepo.save(li);
 		}
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem id does not match.");
 	}
 	
 	// Delete a LineItem
-	@DeleteMapping("/")
-	public LineItem deleteLineItem(@RequestBody LineItem p)
+	@DeleteMapping("/{id}")
+	public Optional<LineItem> deleteLineItem(@PathVariable int id)
 	{
-		if(p != null)
-			lineItemRepo.delete(p);
-		else
-			System.out.println("No LineItem given");
+		Optional<LineItem> oli = lineItemRepo.findById(id);
 		
-		return p;
+		if(oli.isPresent())
+		{
+			LineItem li = oli.get();
+			Request r = li.getRequest();
+			Product p = li.getProduct();
+			double price = Double.parseDouble(p.getPrice());
+			price *= li.getQuantity();
+			r.setTotal(r.getTotal() - price);
+			
+			requestRepo.save(r);
+			
+			lineItemRepo.deleteById(id);
+		}
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found.");
+		
+		return oli;
 	}
 }

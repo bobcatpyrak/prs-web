@@ -13,7 +13,7 @@ import com.prs.db.ProductRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController 
 {
 	@Autowired
@@ -50,26 +50,24 @@ public class ProductController
 	}
 	
 	// Edit a Product
-	@PutMapping("/")
-	public Product updateProduct(@RequestBody Product p)
+	@PutMapping("/{id}")
+	public Product updateProduct(@RequestBody Product p, @PathVariable int id)
 	{
-		if(p != null)
+		if(id == p.getId())
 			return productRepo.save(p);
 		else
-		{
-			System.out.println("No product given");
-			return null;
-		}
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product id does not match.");
 	}
 	
 	// Delete a Product
-	@DeleteMapping("/")
-	public Product deleteProduct(@RequestBody Product p)
+	@DeleteMapping("/{id}")
+	public Optional<Product> deleteProduct(@PathVariable int id)
 	{
-		if(p != null)
-			productRepo.delete(p);
+		Optional<Product> p = productRepo.findById(id);
+		if(p.isPresent())
+			productRepo.deleteById(id);
 		else
-			System.out.println("No Product given");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found.");
 		
 		return p;
 	}

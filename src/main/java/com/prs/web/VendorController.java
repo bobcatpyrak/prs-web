@@ -13,7 +13,7 @@ import com.prs.db.VendorRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/vendors")
+@RequestMapping("/api/vendors")
 public class VendorController 
 {
 	@Autowired
@@ -50,26 +50,24 @@ public class VendorController
 	}
 	
 	// Edit a Vendor
-	@PutMapping("/")
-	public Vendor updateVendor(@RequestBody Vendor p)
+	@PutMapping("/{id}")
+	public Vendor updateVendor(@RequestBody Vendor p, @PathVariable int id)
 	{
-		if(p != null)
+		if(id == p.getId())
 			return vendorRepo.save(p);
 		else
-		{
-			System.out.println("No vendor given");
-			return null;
-		}
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor id does not match.");
 	}
 	
 	// Delete a Vendor
-	@DeleteMapping("/")
-	public Vendor deleteVendor(@RequestBody Vendor p)
+	@DeleteMapping("/{id}")
+	public Optional<Vendor> deleteVendor(@PathVariable int id)
 	{
-		if(p != null)
-			vendorRepo.delete(p);
+		Optional<Vendor> p = vendorRepo.findById(id);
+		if(p.isPresent())
+			vendorRepo.deleteById(id);
 		else
-			System.out.println("No Vendor given");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found.");
 		
 		return p;
 	}

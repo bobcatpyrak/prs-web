@@ -13,7 +13,7 @@ import com.prs.db.RequestRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/requests")
+@RequestMapping("/api/requests")
 public class RequestController 
 {
 	@Autowired
@@ -23,6 +23,12 @@ public class RequestController
 	@GetMapping("/")
 	public List<Request> getAllRequests() {
 		return requestRepo.findAll();
+	}
+	
+	// List all Requests in need of Review
+	@GetMapping("/reviews")
+	public List<Request> getAllRequestsInReview() {
+		return requestRepo.findByStatus("Review");
 	}
 	
 	// Get a Request by id
@@ -49,27 +55,54 @@ public class RequestController
 		}
 	}
 	
-	// Edit a Request
-	@PutMapping("/")
-	public Request updateRequest(@RequestBody Request p)
+	// Set a Request to be under review
+	@PutMapping("/review")
+	public Request SetRequests(@RequestBody Request p)
 	{
-		if(p != null)
+		if(p.getTotal() > 50.00)
+		{
+			p.setStatus("Review");
+			return requestRepo.save(p);
+		}
+		else
+			return SetApproved(p);
+	}
+	
+	// Set a Request to be approved
+	@PutMapping("/approve")
+	public Request SetApproved(@RequestBody Request p)
+	{
+		p.setStatus("Approved");
+		return requestRepo.save(p);
+	}
+	
+	// Set a Request to be rejected
+	@PutMapping("/reject")
+	public Request SetRejected(@RequestBody Request p)
+	{
+		p.setStatus("Rejected");
+		return requestRepo.save(p);
+	}
+	
+	// Edit a Request
+	@PutMapping("/{id}")
+	public Request updateRequest(@RequestBody Request p, @PathVariable int id)
+	{
+		if(id == p.getId())
 			return requestRepo.save(p);
 		else
-		{
-			System.out.println("No request given");
-			return null;
-		}
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request id does not match.");
 	}
 	
 	// Delete a Request
-	@DeleteMapping("/")
-	public Request deleteRequest(@RequestBody Request p)
+	@DeleteMapping("/{id}")
+	public Optional<Request> deleteRequest(@PathVariable int id)
 	{
-		if(p != null)
-			requestRepo.delete(p);
+		Optional<Request> p = requestRepo.findById(id);
+		if(p.isPresent())
+			requestRepo.deleteById(id);
 		else
-			System.out.println("No Request given");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found.");
 		
 		return p;
 	}

@@ -13,7 +13,7 @@ import com.prs.db.UserRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController 
 {
 	@Autowired
@@ -24,6 +24,20 @@ public class UserController
 	public List<User> getAllUsers() {
 		return userRepo.findAll();
 	}
+	
+	// Get a User by username/password
+	@GetMapping("/{username}/{password}")
+	public User getUserByLogin(@PathVariable String username, @PathVariable String password) 
+	{
+		User m = userRepo.findByUsernameAndPassword(username, password); 
+		if(m != null)
+		{
+			return m;
+		}
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+	}
+
 	
 	// Get a User by id
 	@GetMapping("/{id}")
@@ -40,36 +54,28 @@ public class UserController
 	@PostMapping("/")
 	public User addUser(@RequestBody User p)
 	{
-		if(p != null)
-			return userRepo.save(p);
-		else
-		{
-			System.out.println("No user given");
-			return null;
-		}
+		return userRepo.save(p);
 	}
 	
 	// Edit a User
-	@PutMapping("/")
-	public User updateUser(@RequestBody User p)
+	@PutMapping("/{id}")
+	public User updateUser(@RequestBody User p, @PathVariable int id)
 	{
-		if(p != null)
+		if(id == p.getId())
 			return userRepo.save(p);
 		else
-		{
-			System.out.println("No user given");
-			return null;
-		}
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id does not match.");
 	}
 	
 	// Delete a User
-	@DeleteMapping("/")
-	public User deleteUser(@RequestBody User p)
+	@DeleteMapping("/{id}")
+	public Optional<User> deleteUser(@PathVariable int id)
 	{
-		if(p != null)
-			userRepo.delete(p);
+		Optional<User> p = userRepo.findById(id);
+		if(p.isPresent())
+			userRepo.deleteById(id);
 		else
-			System.out.println("No User given");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
 		
 		return p;
 	}

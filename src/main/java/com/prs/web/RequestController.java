@@ -45,9 +45,13 @@ public class RequestController
 	// Add a Request
 	@PostMapping("/")
 	public Request addRequest(@RequestBody Request r)
-	{
+	{	
 		if(r != null)
+		{
+			System.out.println("New request created");
+			System.out.println("Total price =: " + r.getTotal());
 			return requestRepo.save(r);
+		}
 		else
 		{
 			System.out.println("No request given");

@@ -48,14 +48,12 @@ public class LineItemController
 		if(li != null)
 		{
 			Request r = li.getRequest();
-			Product p = li.getProduct();
-			double price = p.getPrice();
-			price *= li.getQuantity();
-			r.setTotal(r.getTotal() + price);
-			
-			requestRepo.save(r);
-			
-			return lineItemRepo.save(li);
+
+			lineItemRepo.save(li);
+			recalculate(r);
+			System.out.println("Total price of request: " + r.getTotal());
+			return li;
+
 		}
 		else
 		{
@@ -71,17 +69,12 @@ public class LineItemController
 		
 		if(id == li.getId())
 		{
-			Product p = li.getProduct();
-			double price = p.getPrice() * li.getQuantity();
-			LineItem li2 = lineItemRepo.findById(id).get();
-			Product p2 = li2.getProduct();
-			double price2 = p2.getPrice() * li2.getQuantity();
-			price2 -= price;
 			Request r = li.getRequest();
-			r.setTotal(r.getTotal() + price2);
-			requestRepo.save(r);
-			
-			return lineItemRepo.save(li);
+
+			lineItemRepo.save(li);
+			recalculate(r);
+			System.out.println("Total price of request: " + r.getTotal());
+			return li;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem id does not match.");
@@ -97,18 +90,29 @@ public class LineItemController
 		{
 			LineItem li = oli.get();
 			Request r = li.getRequest();
-			Product p = li.getProduct();
-			double price = p.getPrice();
-			price *= li.getQuantity();
-			r.setTotal(r.getTotal() - price);
-			
-			requestRepo.save(r);
-			
+
 			lineItemRepo.deleteById(id);
+			recalculate(r);
+			System.out.println("Total price of request: " + r.getTotal());
+
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found.");
 		
 		return oli;
+	}
+	
+	public void recalculate(Request r)
+	{
+		List<LineItem> lis = lineItemRepo.findByRequest(r);
+		double newPrice = 0.0;
+		for(LineItem li : lis)
+		{
+			double price = li.getProduct().getPrice() * li.getQuantity();
+			newPrice += price;
+		}
+		
+		r.setTotal(newPrice);
+		requestRepo.save(r);
 	}
 }

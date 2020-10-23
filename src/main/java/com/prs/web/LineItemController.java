@@ -39,6 +39,17 @@ public class LineItemController
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found");
 	}
+	
+	//Get all LineItems for a Request
+	@GetMapping("/for-req/{id}")
+	public List<LineItem> getLinesForPR(@PathVariable int id)
+	{
+		Request r = requestRepo.findById(id).get();
+		List<LineItem> lis = lineItemRepo.findByRequest(r);
+		return lis;
+	}
+	
+	
 	// Add a LineItem
 	@PostMapping("/")
 	public LineItem addLineItem(@RequestBody LineItem li)

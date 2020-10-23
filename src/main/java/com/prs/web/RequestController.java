@@ -34,20 +34,20 @@ public class RequestController
 	// Get a Request by id
 	@GetMapping("/{id}")
 	public Optional<Request> getRequest(@PathVariable int id) {
-		Optional<Request> m = requestRepo.findById(id);
-		if(m.isPresent())
+		Optional<Request> r = requestRepo.findById(id);
+		if(r.isPresent())
 		{
-			return m;
+			return r;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
 	}
 	// Add a Request
 	@PostMapping("/")
-	public Request addRequest(@RequestBody Request p)
+	public Request addRequest(@RequestBody Request r)
 	{
-		if(p != null)
-			return requestRepo.save(p);
+		if(r != null)
+			return requestRepo.save(r);
 		else
 		{
 			System.out.println("No request given");
@@ -57,39 +57,39 @@ public class RequestController
 	
 	// Set a Request to be under review
 	@PutMapping("/review")
-	public Request SetRequests(@RequestBody Request p)
+	public Request SetRequests(@RequestBody Request r)
 	{
-		if(p.getTotal() > 50.00)
+		if(r.getTotal() > 50.00)
 		{
-			p.setStatus("Review");
-			return requestRepo.save(p);
+			r.setStatus("Review");
+			return requestRepo.save(r);
 		}
 		else
-			return SetApproved(p);
+			return SetApproved(r);
 	}
 	
 	// Set a Request to be approved
 	@PutMapping("/approve")
-	public Request SetApproved(@RequestBody Request p)
+	public Request SetApproved(@RequestBody Request r)
 	{
-		p.setStatus("Approved");
-		return requestRepo.save(p);
+		r.setStatus("Approved");
+		return requestRepo.save(r);
 	}
 	
 	// Set a Request to be rejected
 	@PutMapping("/reject")
-	public Request SetRejected(@RequestBody Request p)
+	public Request SetRejected(@RequestBody Request r)
 	{
-		p.setStatus("Rejected");
-		return requestRepo.save(p);
+		r.setStatus("Rejected");
+		return requestRepo.save(r);
 	}
 	
 	// Edit a Request
 	@PutMapping("/{id}")
-	public Request updateRequest(@RequestBody Request p, @PathVariable int id)
+	public Request updateRequest(@RequestBody Request r, @PathVariable int id)
 	{
-		if(id == p.getId())
-			return requestRepo.save(p);
+		if(id == r.getId())
+			return requestRepo.save(r);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request id does not match.");
 	}
@@ -98,12 +98,12 @@ public class RequestController
 	@DeleteMapping("/{id}")
 	public Optional<Request> deleteRequest(@PathVariable int id)
 	{
-		Optional<Request> p = requestRepo.findById(id);
-		if(p.isPresent())
+		Optional<Request> r = requestRepo.findById(id);
+		if(r.isPresent())
 			requestRepo.deleteById(id);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found.");
 		
-		return p;
+		return r;
 	}
 }

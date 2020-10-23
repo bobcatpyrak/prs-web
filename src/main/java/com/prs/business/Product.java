@@ -13,7 +13,7 @@ public class Product
 	private Vendor vendor;
 	private String partNumber;
 	private String name;
-	private String price;
+	private double price;
 	private String unit;
 	private String photoPath;
 	
@@ -22,7 +22,7 @@ public class Product
 		
 	}
 	
-	public Product (int id, Vendor vendor, String partNumber, String name, String price, String unit, String photoPath)
+	public Product (int id, Vendor vendor, String partNumber, String name, double price, String unit, String photoPath)
 	{
 		this.id = id;
 		this.vendor = vendor;
@@ -60,10 +60,10 @@ public class Product
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPrice() {
+	public double getPrice() {
 		return price;
 	}
-	public void setPrice(String price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	public String getUnit() {

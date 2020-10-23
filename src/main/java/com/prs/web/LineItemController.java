@@ -13,7 +13,7 @@ import com.prs.db.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/lineItems")
+@RequestMapping("/api/lines")
 public class LineItemController 
 {
 	@Autowired
@@ -31,10 +31,10 @@ public class LineItemController
 	// Get a LineItem by id
 	@GetMapping("/{id}")
 	public Optional<LineItem> getLineItem(@PathVariable int id) {
-		Optional<LineItem> m = lineItemRepo.findById(id);
-		if(m.isPresent())
+		Optional<LineItem> li = lineItemRepo.findById(id);
+		if(li.isPresent())
 		{
-			return m;
+			return li;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found");
@@ -49,7 +49,7 @@ public class LineItemController
 		{
 			Request r = li.getRequest();
 			Product p = li.getProduct();
-			double price = Double.parseDouble(p.getPrice());
+			double price = p.getPrice();
 			price *= li.getQuantity();
 			r.setTotal(r.getTotal() + price);
 			
@@ -72,10 +72,10 @@ public class LineItemController
 		if(id == li.getId())
 		{
 			Product p = li.getProduct();
-			double price = Double.parseDouble(p.getPrice()) * li.getQuantity();
+			double price = p.getPrice() * li.getQuantity();
 			LineItem li2 = lineItemRepo.findById(id).get();
 			Product p2 = li2.getProduct();
-			double price2 = Double.parseDouble(p2.getPrice()) * li2.getQuantity();
+			double price2 = p2.getPrice() * li2.getQuantity();
 			price2 -= price;
 			Request r = li.getRequest();
 			r.setTotal(r.getTotal() + price2);
@@ -98,7 +98,7 @@ public class LineItemController
 			LineItem li = oli.get();
 			Request r = li.getRequest();
 			Product p = li.getProduct();
-			double price = Double.parseDouble(p.getPrice());
+			double price = p.getPrice();
 			price *= li.getQuantity();
 			r.setTotal(r.getTotal() - price);
 			

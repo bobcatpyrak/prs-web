@@ -28,20 +28,20 @@ public class VendorController
 	// Get a Vendor by id
 	@GetMapping("/{id}")
 	public Optional<Vendor> getVendor(@PathVariable int id) {
-		Optional<Vendor> m = vendorRepo.findById(id);
-		if(m.isPresent())
+		Optional<Vendor> v = vendorRepo.findById(id);
+		if(v.isPresent())
 		{
-			return m;
+			return v;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found");
 	}
 	// Add a Vendor
 	@PostMapping("/")
-	public Vendor addVendor(@RequestBody Vendor p)
+	public Vendor addVendor(@RequestBody Vendor v)
 	{
-		if(p != null)
-			return vendorRepo.save(p);
+		if(v != null)
+			return vendorRepo.save(v);
 		else
 		{
 			System.out.println("No vendor given");
@@ -51,10 +51,10 @@ public class VendorController
 	
 	// Edit a Vendor
 	@PutMapping("/{id}")
-	public Vendor updateVendor(@RequestBody Vendor p, @PathVariable int id)
+	public Vendor updateVendor(@RequestBody Vendor v, @PathVariable int id)
 	{
-		if(id == p.getId())
-			return vendorRepo.save(p);
+		if(id == v.getId())
+			return vendorRepo.save(v);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor id does not match.");
 	}
@@ -63,12 +63,12 @@ public class VendorController
 	@DeleteMapping("/{id}")
 	public Optional<Vendor> deleteVendor(@PathVariable int id)
 	{
-		Optional<Vendor> p = vendorRepo.findById(id);
-		if(p.isPresent())
+		Optional<Vendor> v = vendorRepo.findById(id);
+		if(v.isPresent())
 			vendorRepo.deleteById(id);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found.");
 		
-		return p;
+		return v;
 	}
 }

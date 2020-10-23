@@ -29,10 +29,10 @@ public class UserController
 	@GetMapping("/{username}/{password}")
 	public User getUserByLogin(@PathVariable String username, @PathVariable String password) 
 	{
-		User m = userRepo.findByUsernameAndPassword(username, password); 
-		if(m != null)
+		User u = userRepo.findByUsernameAndPassword(username, password); 
+		if(u != null)
 		{
-			return m;
+			return u;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -42,27 +42,27 @@ public class UserController
 	// Get a User by id
 	@GetMapping("/{id}")
 	public Optional<User> getUser(@PathVariable int id) {
-		Optional<User> m = userRepo.findById(id);
-		if(m.isPresent())
+		Optional<User> u = userRepo.findById(id);
+		if(u.isPresent())
 		{
-			return m;
+			return u;
 		}
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
 	}
 	// Add a User
 	@PostMapping("/")
-	public User addUser(@RequestBody User p)
+	public User addUser(@RequestBody User u)
 	{
-		return userRepo.save(p);
+		return userRepo.save(u);
 	}
 	
 	// Edit a User
 	@PutMapping("/{id}")
-	public User updateUser(@RequestBody User p, @PathVariable int id)
+	public User updateUser(@RequestBody User u, @PathVariable int id)
 	{
-		if(id == p.getId())
-			return userRepo.save(p);
+		if(id == u.getId())
+			return userRepo.save(u);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id does not match.");
 	}
@@ -71,12 +71,12 @@ public class UserController
 	@DeleteMapping("/{id}")
 	public Optional<User> deleteUser(@PathVariable int id)
 	{
-		Optional<User> p = userRepo.findById(id);
-		if(p.isPresent())
+		Optional<User> u = userRepo.findById(id);
+		if(u.isPresent())
 			userRepo.deleteById(id);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
 		
-		return p;
+		return u;
 	}
 }

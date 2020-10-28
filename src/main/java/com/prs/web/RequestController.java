@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.prs.business.Request;
 import com.prs.db.RequestRepo;
+import com.prs.db.UserRepo;
 
 @CrossOrigin
 @RestController
@@ -19,6 +20,9 @@ public class RequestController
 	@Autowired
 	private RequestRepo requestRepo;
 	
+	@Autowired
+	private UserRepo userRepo;
+	
 	// List all Requests
 	@GetMapping("/")
 	public List<Request> getAllRequests() {
@@ -26,9 +30,9 @@ public class RequestController
 	}
 	
 	// List all Requests in need of Review
-	@GetMapping("/reviews")
-	public List<Request> getAllRequestsInReview() {
-		return requestRepo.findByStatus("Review");
+	@GetMapping("/reviews/{userId}")
+	public List<Request> getAllRequestsInReview(@PathVariable int userId) {
+		return requestRepo.findByStatusAndNotUserId("Review", userId);
 	}
 	
 	// Get a Request by id
@@ -66,6 +70,7 @@ public class RequestController
 		if(r.getTotal() > 50.00)
 		{
 			r.setStatus("Review");
+			r.setSubmittedDate(java.time.LocalDateTime.now().toString());
 			return requestRepo.save(r);
 		}
 		else

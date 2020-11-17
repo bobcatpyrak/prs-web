@@ -124,8 +124,7 @@ public class LineItemController
 		}
 		
 		r.setTotal(newPrice);
-		r.setStatus("Review");
-		r.setSubmittedDate(java.time.LocalDateTime.now().toString());
+		r.setStatus("New");
 		requestRepo.save(r);
 		
 	}

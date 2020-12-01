@@ -32,7 +32,7 @@ public class RequestController
 	// List all Requests in need of Review
 	@GetMapping("/reviews/{userId}")
 	public List<Request> getAllRequestsInReview(@PathVariable int userId) {
-		return requestRepo.findByStatusAndUserId("Review", userId);
+		return requestRepo.findByStatusAndUserIdNot("Review", userId);
 	}
 	
 	// Get a Request by id

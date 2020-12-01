@@ -24,6 +24,8 @@ public class Request
 	{
 		status = "new";
 		submittedDate = java.time.LocalDateTime.now().toString();
+		dateNeeded = java.time.LocalDateTime.now().plusWeeks(1).toString();
+		System.out.println(submittedDate + " hahaha " + dateNeeded);
 	}
 	
 	public Request(int id, User user, String description, String justification, String dateNeeded, String deliveryMode, String status, double total, String submittedDate)
@@ -40,8 +42,11 @@ public class Request
 		
 		if (status.equals(""))
 			status = "new";
-		if(submittedDate.equals(""));
+		if(submittedDate.equals(""))
 			submittedDate = java.time.LocalDateTime.now().toString();
+		if(dateNeeded.equals(""))
+			dateNeeded = java.time.LocalDateTime.now().plusWeeks(1).toString();
+		System.out.println(submittedDate + " and " + dateNeeded);
 	}
 
 	public int getId() {

@@ -8,6 +8,6 @@ import com.prs.business.*;
 public interface RequestRepo extends JpaRepository<Request, Integer> 
 {
 
-	List<Request> findByStatusAndUserId(String status, int userId);
+	List<Request> findByStatusAndUserIdNot(String status, int userId);
 
 }
